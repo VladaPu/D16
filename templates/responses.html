@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+{% extends 'flatpages/default.html' %}
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+        Response
+        {% endblock title%}
+    </title>
+</head>
+<body>
+{% block content %}
+
+    <h1>Все отклики</h1>
+    <h3>Всего откликов: {{ responses|length }}</h3>
+
+    <form action="" method="get">
+        {{ filterset.form }}
+        <input type="submit" value="Найти" />
+    </form>
+
+    {% if responses %}
+        <table>
+            <tr>
+                <th>Пост</th>
+                <th>Время публикации</th>
+                <th>Автор</th>
+                <th>Текст</th>
+                <th>Состояние</th>
+
+            </tr>
+            {% for resp in responses %}
+                <tr>
+                    <td>{{ resp.res_post }}</td>
+                    <td>{{ resp.time_in|date:'d M Y'  }}</td>
+                    <td>{{ resp.res_user }}</td>
+                    <td>{{ resp.text }}</td>
+                    <td>{{ resp.status }}</td>
+                    <td>
+                        {% if perms.PostBoard.delete_response %}
+                        <a href="{% url 'response_delete' pk=resp.id %}"> Удалить </a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <h2>Откликов пока нет :(</h2>
+    {% endif %}
+
+    {% if page_obj.previous_page_number == 1 %}
+    <a href="?page=1">1</a>
+    {% endif %}
+    {% if page_obj.previous_page_number != 1 %}
+    <a href="?page=1">
+        Начало
+    </a>
+    ...
+    <a href="?page={{ page_obj.previous_page_number }}">
+        {{ page_obj.previous_page_number }}
+    </a>
+
+    {% endif %}
+
+    {{ page_obj.number }}
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">
+            {{ page_obj.next_page_number }}
+        </a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?page={{ paginator.num_page }}">
+                Конец
+            </a>
+        {% endif %}
+    {% endif %}
+
+
+{% endblock content%}
+</body>
+</html>
